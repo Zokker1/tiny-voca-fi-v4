@@ -1,22 +1,17 @@
-# tiny-voca-fi-v4 (50k steps) — Oma suomenkielinen pohjakoulutettu TTS-malli
+# tiny-voca-fi-v4 (50k steps)
 
-> **Huomio / Note:** Tämä ei ole valmiista mallista kopioitu tai pelkkä inference-kääre, vaan **täysin alusta asti suomen kielelle itse pohjakoulutettu (trained from scratch) neuro-TTS-malli** ([Zokker1](https://github.com/Zokker1)).  
-> Koodipohja ja arkkitehtuuri perustuvat [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-projektiin (Apache-2.0), mutta **kaikki mallin painot, suomen 92-foneemin etupää, koulutusdata-ajo, `AcousticToVocosMel`-silta, `Vocos 24 kHz` -yhteiskoulutus sekä paikallinen HTML-käyttöliittymä ovat omaa työtäni.**
+Suomenkielinen TTS-mallin koulutusharjoitus Google Colabissa. Malli on koulutettu alusta asti suomenkielisellä puhedatalla [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-arkkitehtuuria käyttäen, ja aaltomuodon synteesiin on yhdistetty `AcousticToVocosMel`-silta sekä yhdessä hienosäädetty **Vocos 24 kHz** -vokooderi.
 
----
+Projektin tarkoituksena on ollut kokeilla kevyen suomenkielisen neuro-TTS-mallin rakentamista ja kouluttamista tyhjästä alkaen sekä testata sitä paikallisesti HTML-käyttöliittymän kautta.
 
-## Mikä tämä malli on? (Model Overview)
+## Malli ja koulutus
 
-- **Tekijä / Author:** `Zokker1`
-- **Kieli / Language:** Suomi (`fi`), kaksi puhujaa: **`M2`** (mies) ja **`F2`** (nainen).
-- **Koulutustapa (Trained from scratch):**
-  - **Pohjamalli:** Koulutettu tyhjästä (`step 0` → `30 000` askelta) ja jatkettu/haaroitettu yhteensä **50 000 askeleeseen** (`v4`, `weights/joint_inference.pt`).
-  - **Koulutusdata:** `4 855` koulutusnäytettä ja `145` validointinäytettä (`CSS10 Finnish` miesääni `M2` + `VoxPopuli Finnish` naisääni `F2`), kohdistettu foneemitasolle mallilla `facebook/wav2vec2-lv-60-espeak-cv-ft`.
-  - **Suomenkielinen frontend (`tiny_voca/text.py`):** Laajennettu 92-foneemin suomalainen merkistö (mm. suomen geminaatat `pː, tː, kː`, `r` sekä pitkät ja lyhyet vokaalit `a, aː, e, eː, o, u, y, yː, æː, ø, øː, ɪː`, diftongisäännöt ja `espeak-ng -v fi`).
-  - **Aaltomuodon synteesi:** `TinyVoca` (akustinen malli) → `AcousticToVocosMel` (192 → 100 mel-kanavaa) → yhdessä hienosäädetty **Vocos 24 kHz** -vokooderi (`charactr/vocos-mel-24khz` -pohjalta).
-  - **Välivaiheen arviointi (`step 30 000`, `meta/fi_evaluation_report_step30000.json`):** Whisper-tunnistuksella mitattu `mean_cer = 2.64 %` (0.0264) ja `mean_wer = 20.72 %` (0.2072) ennen jatkokoulutusta 50k askeleeseen.
-
----
+- **Kieli ja puhujat:** Suomi (`fi`), kaksi ääntä: **`M2`** (mies) ja **`F2`** (nainen).
+- **Koulutus Google Colabissa:** Pohjamalli koulutettiin alusta asti (`0 → 30 000` askelta) ja jatkokoulutettiin yhteensä **50 000 askeleeseen** (`v4`, `weights/joint_inference.pt`).
+- **Aineisto:** `4 855` koulutusnäytettä ja `145` validointinäytettä (`CSS10 Finnish` `M2` + `VoxPopuli Finnish` `F2`), kohdistettu foneemitasolle mallilla `facebook/wav2vec2-lv-60-espeak-cv-ft`.
+- **Suomenkielinen frontend (`tiny_voca/text.py`):** 92 foneemin suomalainen merkistö (mm. geminaatat `pː, tː, kː`, `r`, pitkät ja lyhyet vokaalit sekä diftongien purkusäännöt `espeak-ng -v fi`:n päälle).
+- **Vokooderi:** `TinyVoca` (akustiset piirteet) → `AcousticToVocosMel` (192 → 100 mel-kanavaa) → hienosäädetty **Vocos 24 kHz** (`charactr/vocos-mel-24khz`).
+- **Välivaiheen arviointi (`step 30 000`, `meta/fi_evaluation_report_step30000.json`):** Whisperillä mitattuna `mean_cer = 2.64 %` ja `mean_wer = 20.72 %`.
 
 ## Painojen lisääminen paikallisesti
 Lataa `joint_inference.pt` tämän GitHub-repon [**Releases**](https://github.com/Zokker1/tiny-voca-fi-v4/releases/tag/v4)-osiosta (`v4`) ja tallenna se kansioon `weights/joint_inference.pt`.
@@ -31,7 +26,7 @@ Lataa `joint_inference.pt` tämän GitHub-repon [**Releases**](https://github.co
    .venv\Scripts\activate
    pip install -r requirements.txt
    ```
-3. **HTML-käyttöliittymä (suositus):**
+3. **HTML-käyttöliittymä:**
    ```bash
    python server.py --open
    ```
@@ -42,6 +37,5 @@ Lataa `joint_inference.pt` tämän GitHub-repon [**Releases**](https://github.co
    ```
 
 ## Lisenssi ja viittaukset
-- Arkkitehtuuri- ja koulutuskehys pohjautuu [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-projektiin (Apache-2.0).
-- Vokooderin runkona on [`charactr/vocos-mel-24khz`](https://huggingface.co/charactr/vocos-mel-24khz), joka on hienosäädetty osana tätä suomenkielistä mallia.
+- Pohjautuu [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-arkkitehtuuriin (Apache-2.0) ja [`charactr/vocos-mel-24khz`](https://huggingface.co/charactr/vocos-mel-24khz)-vokooderiin.
 - Lisenssi: Apache-2.0 ([`LICENSE`](LICENSE)).
