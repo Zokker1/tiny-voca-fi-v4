@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+weights/*.pt
+weights/*.pth
+weights/*.onnx
+*.wav
+.DS_Store
+Thumbs.db

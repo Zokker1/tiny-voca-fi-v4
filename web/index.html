@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tiny-voca-fi v4 — Suomenkielinen TTS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23171512'/%3E%3Cpath d='M8 13v6M12 9v14M16 12v8M20 7v18M24 13v6' stroke='%23e0703f' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f2ea;
+    --ink: #1b1915;
+    --muted: #6d665b;
+    --line: #d9d2c4;
+    --panel: #fffdf8;
+    --accent: #b4421f;
+    --accent-hover: #973517;
+    --accent-ink: #ffffff;
+    --ok: #2f6b3c;
+    --err: #b42318;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141311;
+      --ink: #ece6da;
+      --muted: #9e9587;
+      --line: #312d26;
+      --panel: #1d1b18;
+      --accent: #e0703f;
+      --accent-hover: #ed8253;
+      --accent-ink: #141311;
+      --ok: #7fbf8c;
+      --err: #f97066;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.55 var(--ui);
+  }
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 42px 20px 72px;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  header h1 {
+    font: 600 40px/1.08 var(--serif);
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 56ch;
+  }
+  header p strong { color: var(--ink); font-weight: 600; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 13px var(--mono);
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 13px;
+    white-space: nowrap;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .dot.ready { background: var(--ok); }
+  .dot.err { background: var(--err); }
+
+  .panel {
+    margin-top: 28px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font: 20px/1.5 var(--serif);
+    padding: 4px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .examples button {
+    font: 13px var(--ui);
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 11px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .examples button:hover {
+    color: var(--ink);
+    border-color: var(--muted);
+  }
+  .char-count {
+    font: 12px var(--mono);
+    color: var(--muted);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 22px;
+    border-top: 1px solid var(--line);
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+  .voices {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .voices label {
+    padding: 7px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--muted);
+    user-select: none;
+  }
+  .voices input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .voices input:checked + span {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .voices label:has(input:checked) {
+    background: var(--paper);
+  }
+  .slider {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .slider input[type="range"] {
+    width: 118px;
+    accent-color: var(--accent);
+  }
+  .slider output {
+    font: 13px var(--mono);
+    color: var(--ink);
+    min-width: 4.5ch;
+  }
+  #speak {
+    margin-left: auto;
+    min-width: 7.5em;
+    font: 600 15px var(--ui);
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 22px;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  #speak:hover:not(:disabled) { background: var(--accent-hover); }
+  #speak:disabled { opacity: 0.45; cursor: default; }
+
+  details.advanced {
+    margin-top: 14px;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+  details.advanced summary {
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--muted);
+    user-select: none;
+  }
+  details.advanced summary:hover { color: var(--ink); }
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px 20px;
+    margin-top: 14px;
+    align-items: center;
+  }
+  .adv-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .adv-item .top {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .adv-item output {
+    font: 12px var(--mono);
+    color: var(--ink);
+  }
+  .adv-item input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  .checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    align-items: center;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .checks label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .checks input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+  }
+  .reset-btn {
+    margin-left: auto;
+    font: 13px var(--ui);
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 5px 11px;
+    cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); border-color: var(--muted); }
+
+  .status {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--muted);
+    min-height: 22px;
+  }
+  .status.error { color: var(--err); }
+
+  .result[hidden] { display: none; }
+  .result {
+    margin-top: 18px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 20px;
+  }
+  .player-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  audio {
+    flex: 1 1 280px;
+    min-width: 240px;
+  }
+  .download-btn {
+    font: 500 14px var(--ui);
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 15px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .download-btn:hover { border-color: var(--muted); }
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px 0 0;
+  }
+  dl div {
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+  }
+  dt { font-size: 12px; color: var(--muted); }
+  dd { margin: 2px 0 0; font: 15px var(--mono); }
+
+  .result details {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .result details pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font: 13px/1.6 var(--mono);
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 8px 0 0;
+  }
+
+  .history[hidden] { display: none; }
+  .history {
+    margin-top: 28px;
+  }
+  .history h2 {
+    font: 600 15px var(--ui);
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .history-item {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .history-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .history-text {
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .history-item audio {
+    height: 36px;
+    width: 100%;
+  }
+
+  .facts {
+    margin-top: 38px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+  }
+  .facts div {
+    padding: 15px 12px 15px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .facts b {
+    display: block;
+    font: 600 20px var(--serif);
+  }
+  .facts span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 32px; }
+    main { padding-top: 28px; }
+    dl { grid-template-columns: repeat(2, 1fr); }
+    .facts { grid-template-columns: repeat(2, 1fr); }
+    #speak { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>tiny-voca-fi v4</h1>
+      <p>Suomenkielinen kevyt neuro-TTS (<strong>tiny-voca</strong> 92-foneemin frontend + <strong>Vocos 24 kHz</strong>, 50k askelta). Ajetaan paikallisesti omalla koneellasi.</p>
+    </div>
+    <div class="pill" title="Palvelimen ja mallin tila">
+      <span class="dot" id="dot"></span>
+      <span id="device-badge">Yhdistetään…</span>
+    </div>
+  </header>
+
+  <section class="panel">
+    <textarea id="text" spellcheck="false" aria-label="Syntetisoitava suomenkielinen teksti">Hyvää iltaa! Tämä on pääversion suomenkielinen neuro-TTS, joka toimii paikallisesti omalla koneellasi.</textarea>
+    <div class="meta-row">
+      <div class="examples" id="examples"></div>
+      <span class="char-count" id="char-count">0 merkkiä</span>
+    </div>
+
+    <div class="controls">
+      <div class="voices" id="voices" role="radiogroup" aria-label="Puhuja"></div>
+
+      <label class="slider">
+        Nopeus
+        <input id="speed" type="range" min="0.60" max="1.60" step="0.05" value="1.00">
+        <output id="speed-val">1.00×</output>
+      </label>
+
+      <label class="slider">
+        Intonaatio
+        <input id="pitch-range" type="range" min="0.50" max="2.00" step="0.05" value="1.25">
+        <output id="pitch-range-val">1.25</output>
+      </label>
+
+      <button id="speak" disabled>Puhu</button>
+    </div>
+
+    <details class="advanced">
+      <summary>Lisäasetukset (sävelkorkeus, elävyys, loppulasku, masterointi)</summary>
+      <div class="adv-grid">
+        <label class="adv-item">
+          <span class="top"><span>Sävelkorkeus (puolisävelaskelta)</span><output id="pitch-shift-val">0.0</output></span>
+          <input id="pitch-shift" type="range" min="-6.0" max="6.0" step="0.5" value="0.0">
+        </label>
+        <label class="adv-item">
+          <span class="top"><span>Elävyys (wobble)</span><output id="wobble-val">0.18</output></span>
+          <input id="wobble" type="range" min="0.00" max="0.50" step="0.02" value="0.18">
+        </label>
+        <label class="adv-item">
+          <span class="top"><span>Loppulasku (end taper)</span><output id="end-taper-val">0.75</output></span>
+          <input id="end-taper" type="range" min="0.00" max="1.50" step="0.05" value="0.75">
+        </label>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="sentence-stress" checked> Lausepainotus (kevyet/painokkaat sanat)</label>
+        <label><input type="checkbox" id="master" checked> Äänen masterointi (EQ + kevyt tila)</label>
+        <button type="button" class="reset-btn" id="reset-defaults">Palauta oletukset</button>
+      </div>
+    </details>
+  </section>
+
+  <div class="status" id="status" role="status">Yhdistetään paikalliseen TTS-palvelimeen…</div>
+
+  <section class="result" id="result" hidden>
+    <div class="player-row">
+      <audio id="audio" controls></audio>
+      <a id="download" class="download-btn" download="tiny_voca_fi_v4.wav">Lataa WAV</a>
+    </div>
+    <dl>
+      <div><dt>Äänen kesto</dt><dd id="m-audio">–</dd></div>
+      <div><dt>Generointiaika</dt><dd id="m-time">–</dd></div>
+      <div><dt>Nopeus</dt><dd id="m-speed">–</dd></div>
+      <div><dt>Lauselmia</dt><dd id="m-utts">–</dd></div>
+    </dl>
+    <details>
+      <summary>Foneemit (eSpeak NG IPA)</summary>
+      <pre id="phonemes"></pre>
+    </details>
+  </section>
+
+  <section class="history" id="history" hidden>
+    <h2>Aiemmat kokeilut tässä istunnossa</h2>
+    <div class="history-list" id="history-list"></div>
+  </section>
+
+  <section class="facts">
+    <div><b>tiny-voca + Vocos</b><span>92-foneemin frontend + 24 kHz mel-vokooderi</span></div>
+    <div><b>50 000 askelta</b><span>pääversio v4 (CSS10 M2 + VoxPopuli F2)</span></div>
+    <div><b>Ctrl + Enter</b><span>pikakomento puheen generointiin</span></div>
+  </section>
+</main>
+
+<script>
+const EXAMPLES = [
+  ["Tervehdys", "Hyvää iltaa! Tämä on pääversion suomenkielinen neuro-TTS, joka toimii paikallisesti omalla koneellasi."],
+  ["Kestot", "Tuli, tuuli ja tulli. Kuka kukka on tuo, joka palaa tuolla?"],
+  ["Kysymys", "Oletko jo kuullut, kuinka luonnolliselta suomen kieli voi kuulostaa näin pienellä mallilla?"],
+  ["Numerot", "Hyvää päivää! Kello on neljätoista kolmekymmentä ja ulkona on kahdeksantoista astetta."],
+  ["Yhdyssana", "Lentokonesuihkuturbiinimoottoriapumekaanikko tarkisti moottorin huolellisesti."],
+  ["Tarina", "Lauantaina aurinko paistoi kirkkaasti pienen saaren yllä ja yö oli tyyni. Aallot liplattivat hiljaa rantakiviä vasten."],
+];
+
+const $ = (id) => document.getElementById(id);
+let ready = false;
+let busy = false;
+let currentUrl = null;
+const historyUrls = [];
+
+for (const [label, text] of EXAMPLES) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = label;
+  btn.onclick = () => {
+    $("text").value = text;
+    updateCharCount();
+    updateSpeakBtn();
+    $("text").focus();
+  };
+  $("examples").append(btn);
+}
+
+function updateCharCount() {
+  $("char-count").textContent = `${$("text").value.length} merkkiä`;
+}
+
+function updateSpeakBtn() {
+  $("speak").disabled = !ready || busy || !$("text").value.trim();
+  $("speak").textContent = busy ? "Luodaan…" : "Puhu";
+}
+
+function bindSlider(id, outId, format) {
+  const el = $(id);
+  const out = $(outId);
+  const sync = () => { out.textContent = format(Number(el.value)); };
+  el.addEventListener("input", sync);
+  sync();
+}
+
+bindSlider("speed", "speed-val", (v) => v.toFixed(2) + "×");
+bindSlider("pitch-range", "pitch-range-val", (v) => v.toFixed(2));
+bindSlider("pitch-shift", "pitch-shift-val", (v) => (v > 0 ? "+" : "") + v.toFixed(1));
+bindSlider("wobble", "wobble-val", (v) => v.toFixed(2));
+bindSlider("end-taper", "end-taper-val", (v) => v.toFixed(2));
+
+$("reset-defaults").onclick = () => {
+  $("speed").value = "1.00";
+  $("pitch-range").value = "1.25";
+  $("pitch-shift").value = "0.0";
+  $("wobble").value = "0.18";
+  $("end-taper").value = "0.75";
+  $("sentence-stress").checked = true;
+  $("master").checked = true;
+  ["speed", "pitch-range", "pitch-shift", "wobble", "end-taper"].forEach((id) => {
+    $(id).dispatchEvent(new Event("input"));
+  });
+};
+
+$("text").addEventListener("input", () => {
+  updateCharCount();
+  updateSpeakBtn();
+});
+updateCharCount();
+
+function setStatus(msg, isError = false) {
+  const el = $("status");
+  el.textContent = msg;
+  el.classList.toggle("error", isError);
+}
+
+function base64ToWavUrl(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const blob = new Blob([bytes], { type: "audio/wav" });
+  return URL.createObjectURL(blob);
+}
+
+function renderVoices(speakers, defaultSpeaker) {
+  const container = $("voices");
+  container.innerHTML = "";
+  const labels = { M2: "M2 (Mies)", F2: "F2 (Nainen)" };
+  for (const spk of speakers) {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "speaker";
+    input.value = spk;
+    if (spk === defaultSpeaker) input.checked = true;
+    const span = document.createElement("span");
+    span.textContent = labels[spk] || spk;
+    label.append(input, span);
+    container.append(label);
+  }
+}
+
+async function loadInfo() {
+  try {
+    const res = await fetch("/api/info");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const info = await res.json();
+    renderVoices(info.speakers, info.default_speaker);
+    $("dot").classList.add("ready");
+    $("device-badge").textContent = `${info.device_name} · ${info.sample_rate / 1000} kHz`;
+    ready = true;
+    setStatus("Valmis. Kirjoita suomenkielinen teksti ja paina Puhu.");
+    updateSpeakBtn();
+  } catch (err) {
+    $("dot").classList.add("err");
+    $("device-badge").textContent = "Palvelin ei vastaa";
+    setStatus("Yhteys paikalliseen palvelimeen epäonnistui. Varmista, että server.py on käynnissä.", true);
+  }
+}
+
+function addHistory(text, speaker, speed, durationS, url) {
+  const item = document.createElement("div");
+  item.className = "history-item";
+  const head = document.createElement("div");
+  head.className = "history-head";
+  head.innerHTML = `<span>${speaker} · nopeus ${Number(speed).toFixed(2)}×</span><span>${durationS.toFixed(2)} s</span>`;
+  const body = document.createElement("div");
+  body.className = "history-text";
+  body.textContent = text.length > 140 ? text.slice(0, 140) + "…" : text;
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.src = url;
+  item.append(head, body, audio);
+  $("history-list").prepend(item);
+  $("history").hidden = false;
+  historyUrls.push(url);
+}
+
+async function speak() {
+  if (!ready || busy) return;
+  const text = $("text").value.trim();
+  if (!text) return;
+
+  const speakerEl = document.querySelector('input[name="speaker"]:checked');
+  const speaker = speakerEl ? speakerEl.value : "M2";
+  const speed = Number($("speed").value);
+
+  busy = true;
+  updateSpeakBtn();
+  setStatus("Syntetisoidaan puhetta…");
+
+  try {
+    const res = await fetch("/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        speaker,
+        speed,
+        pitch_range: Number($("pitch-range").value),
+        pitch_shift: Number($("pitch-shift").value),
+        wobble: Number($("wobble").value),
+        end_taper: Number($("end-taper").value),
+        sentence_stress: $("sentence-stress").checked,
+        master: $("master").checked,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+
+    const url = base64ToWavUrl(data.audio_base64);
+    const historyUrl = base64ToWavUrl(data.audio_base64);
+    if (currentUrl) URL.revokeObjectURL(currentUrl);
+    currentUrl = url;
+
+    $("audio").src = url;
+    $("download").href = url;
+    $("download").download = `tiny_voca_fi_v4_${speaker.toLowerCase()}.wav`;
+
+    $("m-audio").textContent = `${data.duration_s.toFixed(2)} s`;
+    $("m-time").textContent = data.gen_time_s < 1 ? `${Math.round(data.gen_time_s * 1000)} ms` : `${data.gen_time_s.toFixed(2)} s`;
+    $("m-speed").textContent = `${data.rtf.toFixed(1)}× reaaliaika`;
+    $("m-utts").textContent = `${data.utterances} kpl`;
+    $("phonemes").textContent = data.phonemes.join("\n");
+    $("result").hidden = false;
+
+    $("audio").play().catch(() => {});
+    addHistory(text, speaker, speed, data.duration_s, historyUrl);
+    setStatus(`Valmis (${data.duration_s.toFixed(2)} s ääntä luotu ajassa ${data.gen_time_s.toFixed(2)} s).`);
+  } catch (err) {
+    setStatus(err.message || "Synteesi epäonnistui.", true);
+  } finally {
+    busy = false;
+    updateSpeakBtn();
+  }
+}
+
+$("speak").onclick = speak;
+$("text").addEventListener("keydown", (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && !$("speak").disabled) {
+    speak();
+  }
+});
+
+loadInfo();
+</script>
+</body>
+</html>

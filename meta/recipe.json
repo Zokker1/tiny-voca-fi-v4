@@ -1,0 +1,103 @@
+{
+  "batch_frames": 9000,
+  "max_batch": 32,
+  "learning_rate": 0.0003,
+  "warmup": 1000,
+  "lr_half_life": 100000,
+  "grad_clip": 10.0,
+  "gan_start": 8000,
+  "gan_ratio": 0.7,
+  "gan_ramp": 3000,
+  "feature_matching": 30.0,
+  "gan_scale_max": 2000.0,
+  "crop_samples": 8192,
+  "crops": 2,
+  "teacher_hold": 3000,
+  "teacher_ramp": 7000,
+  "teacher_final": 0.0,
+  "subset": null,
+  "validation_size": 32,
+  "seed": 20261113,
+  "voiced_vowel_targets": true,
+  "weights": {
+    "duration": 1.0,
+    "pause": 1.0,
+    "pitch": 2.0,
+    "pitch_spread": 2.0,
+    "voicing": 1.0,
+    "energy": 1.0,
+    "mel_head": 2.0,
+    "stft": 2.0,
+    "mel": 10.0
+  },
+  "branched_from": {
+    "step": 30000,
+    "recipe": {
+      "batch_frames": 9000,
+      "max_batch": 32,
+      "learning_rate": 0.0003,
+      "warmup": 500,
+      "lr_half_life": 40000.0,
+      "grad_clip": 10.0,
+      "gan_start": 2000,
+      "gan_ratio": 0.7,
+      "gan_ramp": 1500,
+      "feature_matching": 30.0,
+      "gan_scale_max": 2000.0,
+      "crop_samples": 8192,
+      "crops": 2,
+      "teacher_hold": 800,
+      "teacher_ramp": 1700,
+      "teacher_final": 0.0,
+      "subset": null,
+      "validation_size": 32,
+      "seed": 20261113,
+      "voiced_vowel_targets": true,
+      "weights": {
+        "duration": 1.0,
+        "pause": 1.0,
+        "pitch": 2.0,
+        "pitch_spread": 2.0,
+        "voicing": 1.0,
+        "energy": 1.0,
+        "mel_head": 2.0,
+        "stft": 2.0,
+        "mel": 10.0
+      },
+      "branched_from": {
+        "step": 0,
+        "recipe": {
+          "gan_start": 999999
+        },
+        "datasets": [],
+        "loaded": {
+          "grown": [],
+          "new": [],
+          "dropped": [],
+          "critics": false,
+          "optimizer": true
+        }
+      }
+    },
+    "datasets": [
+      "9a5f1a3b56b801ad324e5fea8a8189aa4bd9561884627270a07fb5aca81025bf",
+      "d521dc0d0347a64f413817c63ee3c19744e35e8d1450fe174fd436ee0e4f0655"
+    ],
+    "loaded": {
+      "grown": [],
+      "new": [],
+      "dropped": [],
+      "critics": true,
+      "optimizer": true
+    },
+    "frontend": "876ce8b65a7f3f9ab063fdbe6d7b099d6a542adfd3cd4b8a51e20727d2ce4998",
+    "annotation": "f697cc5afc304540addd7b37400b4164c53dd2afa5d7b64fa1997a5d3d88a3e4"
+  },
+  "annotation": "f8edd7193aafae96df131b98953b761c0e43ffbfa5d2c0555585c4463f286b1a",
+  "frontend": "876ce8b65a7f3f9ab063fdbe6d7b099d6a542adfd3cd4b8a51e20727d2ce4998",
+  "train_utterances": 4855,
+  "datasets": [
+    "c3c0f1f706d87743cefbbf654ea118ea5a4f4ac50d58f0cc826011e3dee81347",
+    "4c5b519592d2c935e08d5654e93c8d36a55b0e395ad795438901a6795fdb778e"
+  ]
+}

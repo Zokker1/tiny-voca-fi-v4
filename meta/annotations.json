@@ -1,0 +1,44 @@
+{
+  "identity": {
+    "annotation_version": 3,
+    "acoustic": "a6ebc9798ada0febad3c1e27c3bbd0f1a28a1de7659f4e1b7d6259287c4ce2dd",
+    "frontend": "876ce8b65a7f3f9ab063fdbe6d7b099d6a542adfd3cd4b8a51e20727d2ce4998",
+    "espeak_version": "eSpeak NG text-to-speech: 1.51  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+    "aligner": {
+      "model": "facebook/wav2vec2-lv-60-espeak-cv-ft",
+      "revision": "ae45363bf3413b374fecd9dc8bc1df0e24c3b7f4"
+    },
+    "alignment": {
+      "alignment_version": 2,
+      "aligner": "facebook/wav2vec2-lv-60-espeak-cv-ft",
+      "onset_offset_seconds": -0.019,
+      "min_pause_frames": 7,
+      "silence_below_peak_db": 45.0,
+      "silence_above_floor_db": 8.0,
+      "silence_ceiling_below_peak_db": 30.0,
+      "energy_window": 512
+    },
+    "dataset_revision": "css10_m2+voxpopuli_f2_v1",
+    "limit": null,
+    "sources": {
+      "css10": "f697cc5afc304540addd7b37400b4164c53dd2afa5d7b64fa1997a5d3d88a3e4",
+      "voxpopuli": "ced0c32d512e671c51c615f0e775001e45fc159c7e1d3d1103b31c3c3c2d103d"
+    }
+  },
+  "fingerprint": "f8edd7193aafae96df131b98953b761c0e43ffbfa5d2c0555585c4463f286b1a",
+  "complete": true,
+  "stage": "ctc",
+  "acoustic_root": "/content/tiny_voca_fi_local/features",
+  "limits": {
+    "max_weak_phone_fraction": 0.3,
+    "min_token_probability": 0.45,
+    "max_phone_frames": 95,
+    "min_vowel_voiced": 0.45,
+    "min_phones_per_second": 4.0,
+    "max_phones_per_second": 30.0
+  },
+  "counts": {
+    "train": 4855,
+    "validation": 145
+  }
+}

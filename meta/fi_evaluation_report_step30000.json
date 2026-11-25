@@ -1,0 +1,98 @@
+{
+  "checkpoint": "/content/drive/MyDrive/tiny_voca_fi/runs/fi_css10_v1/inference.pt",
+  "step": 30000,
+  "mean_cer": 0.0264,
+  "mean_wer": 0.2072,
+  "samples": [
+    {
+      "id": "benchmark_01_kestot",
+      "text": "Tuli, tuuli ja tulli. Kuka kukka on tuo, joka palaa tuolla?",
+      "whisper_fi": "Tulit tuuli ja tulli. Kuka kukka on tuo, joka palaa tuolla?",
+      "wer": 0.0909,
+      "cer": 0.0182,
+      "duration_s": 5.95,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/benchmark_01_kestot.wav"
+    },
+    {
+      "id": "benchmark_02_yhdyssana",
+      "text": "Lentokonesuihkuturbiinimoottoriapumekaanikko tarkisti moottorin huolellisesti.",
+      "whisper_fi": "Lentokone suihkuturpinimottori ja bumekaanikko tarkisti motorin huolellisesti.",
+      "wer": 1.25,
+      "cer": 0.1299,
+      "duration_s": 6.62,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/benchmark_02_yhdyssana.wav"
+    },
+    {
+      "id": "benchmark_03_numerot",
+      "text": "Hyvää päivää! Kello on neljätoista kolmekymmentä ja ulkona on kahdeksantoista astetta.",
+      "whisper_fi": "Hyvää päivää! Kello on 14.30 ja ulkona on 18 astetta.",
+      "wer": 0.0,
+      "cer": 0.0,
+      "duration_s": 7.97,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/benchmark_03_numerot.wav"
+    },
+    {
+      "id": "benchmark_04_diftongit",
+      "text": "Lauantaina aurinko paistoi kirkkaasti pienen saaren yllä ja yö oli tyyni.",
+      "whisper_fi": "Lauvantaina aurinko paistoi kirkkaasti pienen saaren yllä ja yö oli tyyni.",
+      "wer": 0.0909,
+      "cer": 0.0139,
+      "duration_s": 6.28,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/benchmark_04_diftongit.wav"
+    },
+    {
+      "id": "benchmark_05_yleiskieli",
+      "text": "Suomen kieli on kaunis ja melodinen kieli, jonka ääntäminen on hyvin säännönmukaista.",
+      "whisper_fi": "Suomen kieli on kaunis ja melodinen kieli, jonka ääntäminen on hyvin säännön mukaista.",
+      "wer": 0.1667,
+      "cer": 0.012,
+      "duration_s": 6.98,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/benchmark_05_yleiskieli.wav"
+    },
+    {
+      "id": "heldout_test_01",
+      "text": "II. Sinä iltana me lapset pitkän aikaa valvoimme ja ajattelimme sitä uutta lamppua,",
+      "whisper_fi": "Ihi, sinä iltana me lapset pitkän aikaa valvoimme ja ajattelimme sitä uutta lamppua.",
+      "wer": 0.0769,
+      "cer": 0.0123,
+      "duration_s": 6.42,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/heldout_test_01.wav"
+    },
+    {
+      "id": "heldout_test_02",
+      "text": "Pekka jo silloin pankon nurkalla torkkui ja oli siinä käynyt niin kömpelöksi, että kolahdutti kirstun jalan kynnykseen,",
+      "whisper_fi": "Tekka jo silloin pankon nurkalla torkkui ja oli siinä käynyt niin kömpelöksi, että kolahdutti kirstun jalan kynnykseen.",
+      "wer": 0.0588,
+      "cer": 0.0085,
+      "duration_s": 8.47,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/heldout_test_02.wav"
+    },
+    {
+      "id": "heldout_test_03",
+      "text": "Paha hänet ehkä sittenkin olisi perinyt, jos lamppu olisi särkynyt, mutta ei sille toki tullut mitään. --Mene uunille, sen tollo!",
+      "whisper_fi": "Paha hänet ehkä sittenkin olisi perinyt, jos lampu olisi särkynnyt, mutta ei sille toki tullut mitään. Mene uunille sen tollo.",
+      "wer": 0.1,
+      "cer": 0.0164,
+      "duration_s": 8.98,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/heldout_test_03.wav"
+    },
+    {
+      "id": "heldout_test_04",
+      "text": "Kas, tässä tämä nyt on, tämmöinen tämä nyt on--tänne lasin sisään pannaan öljy, ja tuo suikale siellä sisällä on veeku--",
+      "whisper_fi": "Kastassa tämän nyt on, tämmöinen tämän nyt on, tänne lasin sisään pannaan öljy, ja tuo suikalle siellä sisällä on veeku.",
+      "wer": 0.2381,
+      "cer": 0.0526,
+      "duration_s": 9.03,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/heldout_test_04.wav"
+    },
+    {
+      "id": "heldout_test_05",
+      "text": "Päivällä, päivällä, etkö sinä jouda päivää odottamaan--ei se niin kovin kummaa ole! --Oletko sinä sen sitten jo nähnyt palavan! --",
+      "whisper_fi": "Päivällä päivällä, etkö sinä jouda päivää odottamaan? Ei se niin kovin kummaa ole. Oletko sinä sen sitten jo nähnyt palavan?",
+      "wer": 0.0,
+      "cer": 0.0,
+      "duration_s": 10.13,
+      "wav": "/content/drive/MyDrive/tiny_voca_fi/eval_fi/heldout_test_05.wav"
+    }
+  ]
+}
