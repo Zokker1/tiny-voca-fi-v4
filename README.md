@@ -1,13 +1,27 @@
-# tiny-voca-fi-v4 (50k steps)
+# tiny-voca-fi-v4 (50k steps) — Oma suomenkielinen pohjakoulutettu TTS-malli
 
-Suomenkielinen kevyt neuro-TTS ([`tiny-voca`](https://github.com/n4ze3m/tiny-voca)-pohjainen 92-foneemin frontend + `AcousticToVocosMel` + `Vocos 24 kHz`), **pääversio v4 (50 000 askelta)**.
+> **Huomio / Note:** Tämä ei ole valmiista mallista kopioitu tai pelkkä inference-kääre, vaan **täysin alusta asti suomen kielelle itse pohjakoulutettu (trained from scratch) neuro-TTS-malli** ([Zokker1](https://github.com/Zokker1)).  
+> Koodipohja ja arkkitehtuuri perustuvat [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-projektiin (Apache-2.0), mutta **kaikki mallin painot, suomen 92-foneemin etupää, koulutusdata-ajo, `AcousticToVocosMel`-silta, `Vocos 24 kHz` -yhteiskoulutus sekä paikallinen HTML-käyttöliittymä ovat omaa työtäni.**
 
-Puhujat: **`M2`** (mies) ja **`F2`** (nainen).
+---
+
+## Mikä tämä malli on? (Model Overview)
+
+- **Tekijä / Author:** `Zokker1`
+- **Kieli / Language:** Suomi (`fi`), kaksi puhujaa: **`M2`** (mies) ja **`F2`** (nainen).
+- **Koulutustapa (Trained from scratch):**
+  - **Pohjamalli:** Koulutettu tyhjästä (`step 0` → `30 000` askelta) ja jatkettu/haaroitettu yhteensä **50 000 askeleeseen** (`v4`, `weights/joint_inference.pt`).
+  - **Koulutusdata:** `4 855` koulutusnäytettä ja `145` validointinäytettä (`CSS10 Finnish` miesääni `M2` + `VoxPopuli Finnish` naisääni `F2`), kohdistettu foneemitasolle mallilla `facebook/wav2vec2-lv-60-espeak-cv-ft`.
+  - **Suomenkielinen frontend (`tiny_voca/text.py`):** Laajennettu 92-foneemin suomalainen merkistö (mm. suomen geminaatat `pː, tː, kː`, `r` sekä pitkät ja lyhyet vokaalit `a, aː, e, eː, o, u, y, yː, æː, ø, øː, ɪː`, diftongisäännöt ja `espeak-ng -v fi`).
+  - **Aaltomuodon synteesi:** `TinyVoca` (akustinen malli) → `AcousticToVocosMel` (192 → 100 mel-kanavaa) → yhdessä hienosäädetty **Vocos 24 kHz** -vokooderi (`charactr/vocos-mel-24khz` -pohjalta).
+  - **Välivaiheen arviointi (`step 30 000`, `meta/fi_evaluation_report_step30000.json`):** Whisper-tunnistuksella mitattu `mean_cer = 2.64 %` (0.0264) ja `mean_wer = 20.72 %` (0.2072) ennen jatkokoulutusta 50k askeleeseen.
+
+---
 
 ## Painojen lisääminen paikallisesti
-Lataa `joint_inference.pt` tämän GitHub-repon **Releases**-osiosta (`v4`) ja tallenna se kansioon `weights/joint_inference.pt`.
+Lataa `joint_inference.pt` tämän GitHub-repon [**Releases**](https://github.com/Zokker1/tiny-voca-fi-v4/releases/tag/v4)-osiosta (`v4`) ja tallenna se kansioon `weights/joint_inference.pt`.
 
-*(Tai jos sinulla on `tiny_voca_fi_v4_bundle.zip`, pura se suoraan tähän kansioon niin, että `weights/joint_inference.pt` menee paikalleen.)*
+*(Tai jos sinulla on `tiny_voca_fi_v4_bundle.zip`, pura se suoraan tähän kansioon niin, että `weights/joint_inference.pt` ja `meta/` menevät paikalleen.)*
 
 ## Asennus ja ajo Windowsissa
 1. Asenna [`espeak-ng`](https://github.com/espeak-ng/espeak-ng/releases) (tai `winget install eSpeak-NG.eSpeak-NG`).
@@ -27,6 +41,7 @@ Lataa `joint_inference.pt` tämän GitHub-repon **Releases**-osiosta (`v4`) ja t
    python synthesize.py "Hyvää iltaa! Tämä on pääversion suomenkielinen neuro-TTS." --out testi_v4.wav
    ```
 
-## Lisenssi ja pohjatyö
-- Pohjautuu [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-arkkitehtuuriin (Apache-2.0) ja käyttää [`charactr/vocos-mel-24khz`](https://huggingface.co/charactr/vocos-mel-24khz)-vokooderia.
-- Lisenssi: Apache-2.0 (`LICENSE`).
+## Lisenssi ja viittaukset
+- Arkkitehtuuri- ja koulutuskehys pohjautuu [`n4ze3m/tiny-voca`](https://github.com/n4ze3m/tiny-voca)-projektiin (Apache-2.0).
+- Vokooderin runkona on [`charactr/vocos-mel-24khz`](https://huggingface.co/charactr/vocos-mel-24khz), joka on hienosäädetty osana tätä suomenkielistä mallia.
+- Lisenssi: Apache-2.0 ([`LICENSE`](LICENSE)).
